@@ -25,3 +25,7 @@ body {
     )
     rgb(var(--background-start-rgb));
 }
+
+main {
+  min-height: 100vh;
+}
