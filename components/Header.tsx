@@ -1,7 +1,10 @@
+'use client'
 import Image from 'next/image';
 import Link from 'next/link';
+import { Web3Button } from '@web3modal/react'
 
 export default function Header() {
+
   return (
     <header className='flex flex-row justify-between items-center py-5 px-10 border-b'>
       <div className='flex flex-row items-center'>
@@ -17,6 +20,7 @@ export default function Header() {
         <Link href='/' className='px-3'>Home</Link>
         <Link href='/mint-nft' className='px-3'>Mint NFT</Link>
         <Link href='/my-nft' className='px-3'>My NFT</Link>
+        <Web3Button />
       </div>
     </header>
   )
