@@ -1,22 +1,39 @@
 "use client";
 import { useState } from "react";
+import { uploadFileToIPFS } from "../../scripts/pinata";
 
 export default function MintNFT() {
-  const [formData, setFormData] = useState({
+  const [nftData, setNftData] = useState({
     name: "",
     description: "",
-    imgPath: "",
-    price: 0,
+    price: "",
   });
+
+  const [file, setFile] = useState(null);
+
 
   async function handleSubmit(e) {
     e.preventDefault();
 
-    if(formData.name !== "" && formData.description !== "" && formData.imgPath !== "" && formData.price !== 0) {
+    if(nftData.name !== "" && nftData.description !== "" && file !== null && nftData.price !== "") {
       disableSubmitBtn();
-      // Upload data to the backend API
-      // If the response is successful then 
-      enableSubmitBtn();
+      // Upload image to IPFS
+      const fileUploadResponse = await uploadFileToIPFS(file, nftData.name);
+
+      // If Image Upload is successful then send data to the backend API
+      // const formData = new FormData();
+      // formData.append("name", nftData.name);
+      // formData.append("description", nftData.description);
+      // formData.append("price", nftData.price);
+
+      // const res = await fetch('/api/mint-nft', {
+      //   body: formData,
+      //   method: 'POST'
+      // })
+
+      // if(res) {
+      //   enableSubmitBtn();
+      // }
     } else {
       // display error msg
     }
@@ -52,8 +69,8 @@ export default function MintNFT() {
             name="name"
             id="name"
             className="min-w-full mt-3 rounded min-h-[35px] text-black p-2"
-            value={formData.name}
-            onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+            value={nftData.name}
+            onChange={(e) => setNftData({ ...nftData, name: e.target.value })}
             required
           />
         </div>
@@ -67,8 +84,8 @@ export default function MintNFT() {
             cols={30}
             rows={10}
             className="min-w-full mt-3 rounded min-h-[35px] text-black p-2"
-            value={formData.description}
-            onChange={e => setFormData({ ...formData, description: e.target.value })}
+            value={nftData.description}
+            onChange={e => setNftData({ ...nftData, description: e.target.value })}
           ></textarea>
         </div>
         <div className="flex flex-col justify-around items-start my-5 min-w-full">
@@ -81,8 +98,7 @@ export default function MintNFT() {
             id="image"
             className="min-w-full mt-3 rounded min-h-[35px] text-black p-2"
             accept="image/*"
-            value={formData.imgPath}
-            onChange={e => setFormData({ ...formData, imgPath: e.target.value })}
+            onChange={e => setFile(e.target.files[0])}
             required
           />
         </div>
@@ -95,8 +111,8 @@ export default function MintNFT() {
             name="price"
             id="price"
             className="min-w-full mt-3 rounded min-h-[35px] text-black p-2"
-            value={formData.price}
-            onChange={e => setFormData({ ...formData, price: +e.target.value })}
+            value={nftData.price}
+            onChange={e => setNftData({ ...nftData, price: e.target.value })}
             required
           />
         </div>
