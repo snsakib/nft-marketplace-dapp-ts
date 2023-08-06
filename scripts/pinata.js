@@ -34,7 +34,7 @@ export const uploadFileToIPFS = async (file, name) => {
     .catch(function (error) {
       return {
         success: false,
-        message: error.message,
+        message: error.response.data.error.details,
       };
     });
 };

@@ -8,8 +8,8 @@ export default function MintNFT() {
     description: "",
     price: "",
   });
-
   const [file, setFile] = useState(null);
+  const [msg, setMsg] = useState('');
 
 
   async function handleSubmit(e) {
@@ -18,8 +18,16 @@ export default function MintNFT() {
     if(nftData.name !== "" && nftData.description !== "" && file !== null && nftData.price !== "") {
       disableSubmitBtn();
       // Upload image to IPFS
+      setMsg('Uploading file to IPFS...');
       const fileUploadResponse = await uploadFileToIPFS(file, nftData.name);
 
+      if(fileUploadResponse.success) {
+        setMsg('File uploaded to IPFS successfully!')
+      } else {
+        setMsg(fileUploadResponse.message)
+      }
+
+      enableSubmitBtn();
       // If Image Upload is successful then send data to the backend API
       // const formData = new FormData();
       // formData.append("name", nftData.name);
@@ -115,6 +123,9 @@ export default function MintNFT() {
             onChange={e => setNftData({ ...nftData, price: e.target.value })}
             required
           />
+        </div>
+        <div>
+          <p>{ msg }</p>
         </div>
         <div className="flex flex-col justify-around items-start mt-5 min-w-full">
           <button
