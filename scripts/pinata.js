@@ -27,8 +27,7 @@ export const uploadFileToIPFS = async (file, name) => {
     .then(function (response) {
       return {
         success: true,
-        pinataURL:
-          "https://gateway.pinata.cloud/ipfs/" + response.data.IpfsHash,
+        pinataURL: "https://gateway.pinata.cloud/ipfs/" + response.data.IpfsHash,
       };
     })
     .catch(function (error) {
@@ -39,11 +38,10 @@ export const uploadFileToIPFS = async (file, name) => {
     });
 };
 
-export const uploadJSONToIPFS = async (JSONBody) => {
+export const uploadMetadataToIPFS = async (data) => {
   const url = `https://api.pinata.cloud/pinning/pinJSONToIPFS`;
-  //making axios POST request to Pinata ⬇️
   return axios
-    .post(url, JSONBody, {
+    .post(url, data, {
       headers: {
         pinata_api_key: key,
         pinata_secret_api_key: secret,
@@ -52,12 +50,10 @@ export const uploadJSONToIPFS = async (JSONBody) => {
     .then(function (response) {
       return {
         success: true,
-        pinataURL:
-          "https://gateway.pinata.cloud/ipfs/" + response.data.IpfsHash,
+        pinataURL: "https://gateway.pinata.cloud/ipfs/" + response.data.IpfsHash,
       };
     })
     .catch(function (error) {
-      console.log(error);
       return {
         success: false,
         message: error.message,

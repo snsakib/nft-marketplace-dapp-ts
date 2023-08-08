@@ -1,6 +1,6 @@
 "use client";
 import { useState } from "react";
-import { uploadFileToIPFS } from "../../scripts/pinata";
+import { uploadFileToIPFS, uploadMetadataToIPFS } from "../../scripts/pinata";
 
 export default function MintNFT() {
   const [nftData, setNftData] = useState({
@@ -9,41 +9,35 @@ export default function MintNFT() {
     price: "",
   });
   const [file, setFile] = useState(null);
+  const [pinataURL, setPinataURL] = useState('');
   const [msg, setMsg] = useState('');
 
 
   async function handleSubmit(e) {
     e.preventDefault();
-
     if(nftData.name !== "" && nftData.description !== "" && file !== null && nftData.price !== "") {
       disableSubmitBtn();
       // Upload image to IPFS
       setMsg('Uploading file to IPFS...');
       const fileUploadResponse = await uploadFileToIPFS(file, nftData.name);
-
+      
       if(fileUploadResponse.success) {
-        setMsg('File uploaded to IPFS successfully!')
+        setMsg('Uploading metadata to IPFS...')
+        setPinataURL(fileUploadResponse.pinataURL);        
+        const nftMetadata = { ...nftData, img: pinataURL };
+        const metadataUploadResponse = await uploadMetadataToIPFS(nftMetadata);
+        if(metadataUploadResponse.success) {
+          setMsg('File uploaded to IPFS successfully!')
+        } else {
+          setMsg(metadataUploadResponse.message)
+        } 
       } else {
         setMsg(fileUploadResponse.message)
       }
 
       enableSubmitBtn();
-      // If Image Upload is successful then send data to the backend API
-      // const formData = new FormData();
-      // formData.append("name", nftData.name);
-      // formData.append("description", nftData.description);
-      // formData.append("price", nftData.price);
-
-      // const res = await fetch('/api/mint-nft', {
-      //   body: formData,
-      //   method: 'POST'
-      // })
-
-      // if(res) {
-      //   enableSubmitBtn();
-      // }
     } else {
-      // display error msg
+      setMsg('Please fill up the required fields.')
     }
   }
 
