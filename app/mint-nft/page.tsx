@@ -11,34 +11,23 @@ export default function MintNFT() {
   const [file, setFile] = useState(null);
   const [pinataURL, setPinataURL] = useState('');
   const [msg, setMsg] = useState('');
+  const [listedNFT, setListedNFT] = useState('');
 
-
-  async function handleSubmit(e) {
+  async function listNFT(e) {
     e.preventDefault();
-    if(nftData.name !== "" && nftData.description !== "" && file !== null && nftData.price !== "") {
-      disableSubmitBtn();
-      // Upload image to IPFS
-      setMsg('Uploading file to IPFS...');
-      const fileUploadResponse = await uploadFileToIPFS(file, nftData.name);
-      
-      if(fileUploadResponse.success) {
-        setMsg('Uploading metadata to IPFS...')
-        setPinataURL(fileUploadResponse.pinataURL);        
-        const nftMetadata = { ...nftData, img: pinataURL };
-        const metadataUploadResponse = await uploadMetadataToIPFS(nftMetadata);
-        if(metadataUploadResponse.success) {
-          setMsg('File uploaded to IPFS successfully!')
-        } else {
-          setMsg(metadataUploadResponse.message)
-        } 
-      } else {
-        setMsg(fileUploadResponse.message)
-      }
+    disableSubmitBtn();
 
-      enableSubmitBtn();
-    } else {
-      setMsg('Please fill up the required fields.')
+    try {
+      const fileUploadResponse = await uploadFile(file, nftData.name);
+      if(fileUploadResponse.success) {
+        const metadataUploadResponse = await uploadMetadata()
+      } 
+      // 3. ListNFT
+    } catch (error) {
+      
     }
+
+    enableSubmitBtn();
   }
 
   function disableSubmitBtn() {
@@ -55,12 +44,43 @@ export default function MintNFT() {
     btn.style.opacity = 1;
   }
 
+  async function uploadFile(file, fileName) {
+    if(file !== null && fileName !== '') {
+      setMsg('Uploading file to IPFS...');
+      const res = await uploadFileToIPFS(file, nftData.name);
+      if(res.success) {
+        setPinataURL(res.pinataURL);        
+      }
+      return res;
+    } else {
+      setMsg('Please fill up the required fields.');
+      return {
+        success: false,
+        message: 'Please fill up the required fields.'
+      };
+    }
+  }
+
+  async function uploadMetadata() {
+    if(nftData.name !== "" && nftData.description !== "" && pinataURL !== "" && nftData.price !== "") {
+      setMsg('Uploading metadata to IPFS...')
+      const nftMetadata = { ...nftData, img: pinataURL };
+      const res = await uploadMetadataToIPFS(nftMetadata);
+      if(res.success) {
+        setListedNFT(res.pinataURL);
+      }
+      return res;
+    } else {
+      setMsg('Please fill up the requires fields.')
+    }
+  }
+
   return (
     <div className="flex flex-col items-center py-10">
       <h1 className="text-3xl font-bold text-sky-500 mb-5">Create NFT</h1>
       <form
         className="border rounded-md flex flex-col justify-around items-center min-h-max p-10"
-        onSubmit={handleSubmit}
+        onSubmit={listNFT}
       >
         <div className="flex flex-col justify-around items-start mb-5 min-w-full">
           <label htmlFor="name" className="text-xl font-bold">
