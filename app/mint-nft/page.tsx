@@ -1,6 +1,10 @@
 "use client";
 import { useState } from "react";
 import { uploadFileToIPFS, uploadMetadataToIPFS } from "../../scripts/pinata";
+import { ethers } from "ethers";
+import Marketplace from '../../artifacts/contracts/NFTMarketplace.sol/NFTMarketplace.json';
+import { NFTMarketplaceAddress } from '../../scripts/config';
+import { parseEther } from "viem";
 
 export default function MintNFT() {
   const [nftData, setNftData] = useState({
@@ -9,20 +13,42 @@ export default function MintNFT() {
     price: "",
   });
   const [file, setFile] = useState(null);
-  const [pinataURL, setPinataURL] = useState('');
+  const [fileURL, setFileURL] = useState('');
   const [msg, setMsg] = useState('');
   const [listedNFT, setListedNFT] = useState('');
+  let signer = null;
+  let provider;
 
-  async function listNFT(e) {
+  async function handleSubmit(e) {
     e.preventDefault();
     disableSubmitBtn();
 
     try {
       const fileUploadResponse = await uploadFile(file, nftData.name);
       if(fileUploadResponse.success) {
-        const metadataUploadResponse = await uploadMetadata()
-      } 
-      // 3. ListNFT
+        setFileURL(fileUploadResponse.fileURL);
+        const metadataUploadResponse = await uploadMetadata();
+        if(metadataUploadResponse.success) {
+          if(window.ethereum === null) {
+            provider = ethers.getDefaultProvider();
+          } else {
+            //After adding your Hardhat network to your metamask, this code will get providers and signers
+            provider = new ethers.BrowserProvider(window.ethereum)
+            signer = await provider.getSigner();
+            
+            //Pull the deployed contract instance
+            let contract = new ethers.Contract(NFTMarketplaceAddress, Marketplace.abi, signer)
+            const NFTPrice = parseEther(nftData.price);
+            let listingPrice = await contract.getListingPrice();
+            listingPrice = listingPrice.toString()
+            console.log(listingPrice);
+
+            //actually create the NFT
+            let transaction = await contract.mintNFT(listedNFT, NFTPrice, { value: 100000000 })
+            await transaction.wait()
+          }
+        }
+      }
     } catch (error) {
       
     }
@@ -48,26 +74,27 @@ export default function MintNFT() {
     if(file !== null && fileName !== '') {
       setMsg('Uploading file to IPFS...');
       const res = await uploadFileToIPFS(file, nftData.name);
-      if(res.success) {
-        setPinataURL(res.pinataURL);        
+      if(!res.success) {       
+        setMsg(res.msg);
       }
       return res;
     } else {
       setMsg('Please fill up the required fields.');
       return {
         success: false,
-        message: 'Please fill up the required fields.'
+        msg: 'Please fill up the required fields.'
       };
     }
   }
 
   async function uploadMetadata() {
-    if(nftData.name !== "" && nftData.description !== "" && pinataURL !== "" && nftData.price !== "") {
+    if(nftData.name !== "" && nftData.description !== "" && fileURL !== null && nftData.price !== "") {
       setMsg('Uploading metadata to IPFS...')
-      const nftMetadata = { ...nftData, img: pinataURL };
+      const nftMetadata = { ...nftData, img: fileURL };
       const res = await uploadMetadataToIPFS(nftMetadata);
       if(res.success) {
-        setListedNFT(res.pinataURL);
+        setListedNFT(res.metadataURL);
+        setMsg('Metadata uploaded successfully.')
       }
       return res;
     } else {
@@ -80,7 +107,7 @@ export default function MintNFT() {
       <h1 className="text-3xl font-bold text-sky-500 mb-5">Create NFT</h1>
       <form
         className="border rounded-md flex flex-col justify-around items-center min-h-max p-10"
-        onSubmit={listNFT}
+        onSubmit={handleSubmit}
       >
         <div className="flex flex-col justify-around items-start mb-5 min-w-full">
           <label htmlFor="name" className="text-xl font-bold">

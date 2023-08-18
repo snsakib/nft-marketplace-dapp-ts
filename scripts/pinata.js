@@ -27,13 +27,14 @@ export const uploadFileToIPFS = async (file, name) => {
     .then(function (response) {
       return {
         success: true,
-        pinataURL: "https://gateway.pinata.cloud/ipfs/" + response.data.IpfsHash,
+        fileURL: "https://gateway.pinata.cloud/ipfs/" + response.data.IpfsHash,
+        msg: 'File uploaded successfully!'
       };
     })
     .catch(function (error) {
       return {
         success: false,
-        message: error.response.data.error.details,
+        msg: error.response.data.error.details,
       };
     });
 };
@@ -50,7 +51,7 @@ export const uploadMetadataToIPFS = async (data) => {
     .then(function (response) {
       return {
         success: true,
-        pinataURL: "https://gateway.pinata.cloud/ipfs/" + response.data.IpfsHash,
+        metadataURL: "https://gateway.pinata.cloud/ipfs/" + response.data.IpfsHash,
       };
     })
     .catch(function (error) {
