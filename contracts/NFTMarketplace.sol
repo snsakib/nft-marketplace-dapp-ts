@@ -8,7 +8,7 @@ contract NFTMarketplace is ERC721URIStorage {
     using Counters for Counters.Counter;
     Counters.Counter private _nftIds;
     address payable contractOwner;
-    uint256 listingPrice = 0.01 ether;
+    uint256 listingPrice = 0.0000000001 ether;
 
     struct NFT {
         uint256 id;
@@ -126,6 +126,10 @@ contract NFTMarketplace is ERC721URIStorage {
         (bool sellerTransferSuccess, ) = payable(seller).call{value: msg.value}("");
         
         require (ownerTransferSuccess && sellerTransferSuccess, "Transfering ETH failed");
+    }
+
+    function getListingPrice() public view returns (uint256) {
+        return listingPrice;
     }
 
     function withdraw() internal {
