@@ -13,9 +13,7 @@ export default function MintNFT() {
     price: "",
   });
   const [file, setFile] = useState(null);
-  const [fileURL, setFileURL] = useState('');
   const [msg, setMsg] = useState('');
-  const [listedNFT, setListedNFT] = useState('');
   let signer = null;
   let provider;
 
@@ -26,8 +24,7 @@ export default function MintNFT() {
     try {
       const fileUploadResponse = await uploadFile(file, nftData.name);
       if(fileUploadResponse.success) {
-        setFileURL(fileUploadResponse.fileURL);
-        const metadataUploadResponse = await uploadMetadata();
+        const metadataUploadResponse = await uploadMetadata(fileUploadResponse.fileURL);
         if(metadataUploadResponse.success) {
           if(window.ethereum === null) {
             provider = ethers.getDefaultProvider();
@@ -41,10 +38,10 @@ export default function MintNFT() {
             const NFTPrice = parseEther(nftData.price);
             let listingPrice = await contract.getListingPrice();
             listingPrice = listingPrice.toString()
-            console.log(listingPrice);
+            console.log(metadataUploadResponse.metadataURL);
 
             //actually create the NFT
-            let transaction = await contract.mintNFT(listedNFT, NFTPrice, { value: 100000000 })
+            let transaction = await contract.mintNFT(metadataUploadResponse.metadataURL, NFTPrice, { value: 100000000 })
             await transaction.wait()
           }
         }
@@ -87,13 +84,12 @@ export default function MintNFT() {
     }
   }
 
-  async function uploadMetadata() {
-    if(nftData.name !== "" && nftData.description !== "" && fileURL !== null && nftData.price !== "") {
+  async function uploadMetadata(fileURL) {
+    if(nftData.name !== "" && nftData.description !== "" && fileURL !== "" && nftData.price !== "") {
       setMsg('Uploading metadata to IPFS...')
       const nftMetadata = { ...nftData, img: fileURL };
       const res = await uploadMetadataToIPFS(nftMetadata);
       if(res.success) {
-        setListedNFT(res.metadataURL);
         setMsg('Metadata uploaded successfully.')
       }
       return res;
