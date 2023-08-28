@@ -21,13 +21,10 @@ export default function Home() {
       let contract = new ethers.Contract(NFTMarketplaceAddress, Marketplace.abi, signer);
       let transaction = await contract.getAllNFTs();
       let items = await Promise.all(transaction.map(async (item) => {
-        // console.log('item');
-        // console.log(item);
         let tokenURI = await contract.tokenURI(item.id);
         tokenURI = GetIpfsUrlFromPinata(tokenURI);
         let meta = await axios.get(tokenURI);
         meta = meta.data;
-        // console.log('meta');
         console.log(meta)
         let NFT = {
           id: item.id,
@@ -49,7 +46,7 @@ export default function Home() {
   }, []);
 
   return (
-    <div className="flex justify-between p-10 border">
+    <div className="flex flex-col gap-5 justify-between items-center min-[700px]:flex-row flex-wrap p-5 border">
       {
         data.map((value, index) => {
           return <NFTCard data={value} key={index}></NFTCard>;
