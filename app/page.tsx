@@ -10,22 +10,19 @@ import NFTCard from "@/components/NFTCard";
 export default function Home() {
   const [data, updateData] = useState([]);
   let provider;
-  let signer = null;
 
   async function getAllNFTs() {
     if(window.ethereum === null) {
       provider = ethers.getDefaultProvider();
     } else {
       provider = new ethers.BrowserProvider(window.ethereum);
-      signer = await provider.getSigner();
-      let contract = new ethers.Contract(NFTMarketplaceAddress, Marketplace.abi, signer);
+      let contract = new ethers.Contract(NFTMarketplaceAddress, Marketplace.abi, provider);
       let transaction = await contract.getAllNFTs();
       let items = await Promise.all(transaction.map(async (item) => {
         let tokenURI = await contract.tokenURI(item.id);
         tokenURI = GetIpfsUrlFromPinata(tokenURI);
         let meta = await axios.get(tokenURI);
         meta = meta.data;
-        console.log(meta)
         let NFT = {
           id: item.id,
           name: meta.name,
