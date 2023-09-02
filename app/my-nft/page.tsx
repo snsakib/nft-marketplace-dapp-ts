@@ -25,7 +25,6 @@ export default function MyNFT() {
         tokenURI = GetIpfsUrlFromPinata(tokenURI);
         let meta = await axios.get(tokenURI);
         meta = meta.data;
-        console.log(meta)
         let NFT = {
           id: item.id,
           name: meta.name,
