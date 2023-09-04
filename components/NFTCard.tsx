@@ -10,7 +10,7 @@ export default function NFTCard(data) {
 
   return (
     <Link href={{ pathname: `/nft/${data.data.id}` }}>
-      <div className='border max-w-[280px] min-[400px]:max-w-[300px]'>
+      <div className='border border-black max-w-[280px] min-[400px]:max-w-[300px]'>
         <Image
           src={imgURL}
           width={500}
@@ -21,6 +21,9 @@ export default function NFTCard(data) {
           <h1>{data.data.name}</h1>
           <p>{data.data.description}</p>
           <p>{data.data.price} ether</p>
+        </div>
+        <div className='py-3 mx-3'>
+          <button className='bg-blue-500 p-2 w-full font-bold'>Buy NFT</button>
         </div>
       </div>
     </Link>
