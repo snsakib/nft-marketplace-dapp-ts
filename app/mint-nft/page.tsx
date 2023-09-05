@@ -100,27 +100,27 @@ export default function MintNFT() {
 
   return (
     <div className="flex flex-col items-center py-10">
-      <h1 className="text-3xl font-bold text-sky-500 mb-5">Create NFT</h1>
+      <h1 className="text-3xl font-bold text-sky-900 mb-5">Create NFT</h1>
       <form
-        className="border rounded-md flex flex-col justify-around items-center min-h-max p-10"
+        className="border-2 border-sky-900 rounded-md flex flex-col justify-around items-center min-h-max p-10"
         onSubmit={handleSubmit}
       >
         <div className="flex flex-col justify-around items-start mb-5 min-w-full">
-          <label htmlFor="name" className="text-xl font-bold">
+          <label htmlFor="name" className="text-xl font-bold text-sky-900">
             NFT Name <span className="text-red-700">*</span>
           </label>
           <input
             type="text"
             name="name"
             id="name"
-            className="min-w-full mt-3 rounded min-h-[35px] text-black p-2"
+            className="min-w-full mt-3 rounded min-h-[35px] text-black p-2 border-2 border-sky-900"
             value={nftData.name}
             onChange={(e) => setNftData({ ...nftData, name: e.target.value })}
             required
           />
         </div>
         <div className="flex flex-col justify-around items-start my-5 min-w-full">
-          <label htmlFor="description" className="text-xl font-bold">
+          <label htmlFor="description" className="text-xl font-bold text-sky-900">
             NFT Description
           </label>
           <textarea
@@ -128,34 +128,34 @@ export default function MintNFT() {
             id="description"
             cols={30}
             rows={10}
-            className="min-w-full mt-3 rounded min-h-[35px] text-black p-2"
+            className="min-w-full mt-3 rounded min-h-[35px] text-black p-2 border-2 border-sky-900"
             value={nftData.description}
             onChange={e => setNftData({ ...nftData, description: e.target.value })}
           ></textarea>
         </div>
         <div className="flex flex-col justify-around items-start my-5 min-w-full">
-          <label htmlFor="image" className="text-xl font-bold">
+          <label htmlFor="image" className="text-xl font-bold text-sky-900">
             Upload Image <span className="text-red-700">*</span>
           </label>
           <input
             type="file"
             name="image"
             id="image"
-            className="min-w-full mt-3 rounded min-h-[35px] text-black p-2"
+            className="min-w-full mt-3 rounded min-h-[35px] text-black p-2 file:bg-white file:text-sky-900 file:font-semibold file:rounded file:mr-2 file:py-1 file:px-2 file:border-0 file:border-rounded"
             accept="image/*"
             onChange={e => setFile(e.target.files[0])}
             required
           />
         </div>
         <div className="flex flex-col justify-around items-start my-5 min-w-full">
-          <label htmlFor="price" className="text-xl font-bold">
+          <label htmlFor="price" className="text-xl font-bold text-sky-900">
             Price (in ether) <span className="text-red-700">*</span>
           </label>
           <input
             type="number"
             name="price"
             id="price"
-            className="min-w-full mt-3 rounded min-h-[35px] text-black p-2"
+            className="min-w-full mt-3 rounded min-h-[35px] text-black p-2 border-2 border-sky-900"
             value={nftData.price}
             onChange={e => setNftData({ ...nftData, price: e.target.value })}
             required
@@ -167,7 +167,7 @@ export default function MintNFT() {
         <div className="flex flex-col justify-around items-start mt-5 min-w-full">
           <button
             id="submit"
-            className="rounded font-bold text-xl min-w-full min-h-[35px] bg-sky-500"
+            className="rounded font-bold text-xl min-w-full min-h-[35px] bg-sky-900"
             type="submit"
           >
             Create NFT

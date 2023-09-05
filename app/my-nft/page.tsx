@@ -45,7 +45,7 @@ export default function MyNFT() {
   }, []);
 
   return (
-    <div className="flex flex-col gap-5 justify-between items-center min-[700px]:flex-row flex-wrap p-5 border">
+    <div className="grid grid-cols-1 min-[650px]:grid-cols-2 min-[950px]:grid-cols-3 min-[1250px]:grid-cols-4 gap-5 place-items-center p-5">
       {
         data.map((value, index) => {
           return <NFTCard data={value} key={index}></NFTCard>;

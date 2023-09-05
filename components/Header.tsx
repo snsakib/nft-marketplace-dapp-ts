@@ -5,7 +5,7 @@ import { Web3Button } from "@web3modal/react";
 
 export default function Header() {
   return (
-    <header className="flex flex-col min-[825px]:flex-row justify-between py-5 px-10 border-b border-black">
+    <header className="flex flex-col min-[825px]:flex-row justify-between py-5 px-10 border-b-2 border-black">
       <div className="flex flex-row items-center mb-5 md:lg-0 md:mr-5">
         <Image src="/logo.svg" width={40} height={40} alt="Logo" />
         <h1 className="ml-5 text-xl font-bold min-[500px]:text-2xl text-black">NFT Marketplace</h1>
