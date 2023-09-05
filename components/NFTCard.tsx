@@ -2,11 +2,36 @@
 import Link from 'next/link'
 import Image from 'next/image'
 import { GetIpfsUrlFromPinata } from '@/scripts/pinata';
+import { ethers } from "ethers";
+import Marketplace from '../artifacts/contracts/NFTMarketplace.sol/NFTMarketplace.json';
+import { NFTMarketplaceAddress } from '../scripts/config';
 
 export default function NFTCard(data) {
 
   console.log(data.data);
   const imgURL = GetIpfsUrlFromPinata(data.data.img);
+  let provider;
+  let signer = null;
+
+  let buyNFT = async (NFTData) => {
+    if(window.ethereum === null) {
+      provider = ethers.getDefaultProvider();
+    } else {
+      provider = new ethers.BrowserProvider(window.ethereum);
+      signer = await provider.getSigner();
+      let contract = new ethers.Contract(NFTMarketplaceAddress, Marketplace.abi, signer);
+      const address = await signer.getAddress();
+      const balance = await provider.getBalance(address);
+      const priceInWei = ethers.parseEther(NFTData.price.toString());
+      
+      // if (balance.lt(priceInWei)) {
+      //   throw new Error('Insufficient balance to buy this NFT');
+      // }
+
+      const transaction = await contract.sellNFT(NFTData.id, { value: priceInWei });
+      await transaction.wait();
+    }
+  };
 
   return (
     <div className='border-2 border-sky-900 rounded max-w-[280px] min-[400px]:max-w-[300px]'>
@@ -26,7 +51,7 @@ export default function NFTCard(data) {
         </div>
       </Link>
       <div className='py-3 mx-3'>
-        <button className='bg-sky-900 rounded p-2 w-full font-bold'>Buy NFT</button>
+        <button className='bg-sky-900 rounded p-2 w-full font-bold' onClick={() => buyNFT({ id: data.data.id, price: data.data.price})}>Buy NFT</button>
       </div>
     </div>
   )
