@@ -28,7 +28,7 @@ export default function NFTCard(data) {
         throw new Error('Insufficient balance to buy this NFT');
       }
 
-      const transaction = await contract.sellNFT(NFTData.id, { value: priceInWei });
+      const transaction = await contract.buyNFT(NFTData.id, { value: priceInWei });
       await transaction.wait();
     }
   };

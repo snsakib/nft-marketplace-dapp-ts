@@ -36,12 +36,12 @@ export default function MintNFT() {
             //Pull the deployed contract instance
             let contract = new ethers.Contract(NFTMarketplaceAddress, Marketplace.abi, signer)
             const NFTPrice = parseEther(nftData.price);
-            let listingPrice = await contract.getListingPrice();
+            let listingPrice = await contract.listingPrice();
             listingPrice = listingPrice.toString()
-            console.log(metadataUploadResponse.metadataURL);
+            console.log(listingPrice);
 
             //actually create the NFT
-            let transaction = await contract.mintNFT(metadataUploadResponse.metadataURL, NFTPrice, { value: 100000000 })
+            let transaction = await contract.mintNFT(metadataUploadResponse.metadataURL, NFTPrice, { value: listingPrice })
             await transaction.wait()
           }
         }
