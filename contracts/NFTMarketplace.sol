@@ -1,5 +1,5 @@
 //SPDX-License-Identifier: MIT
-pragma solidity ^0.8.18;
+pragma solidity 0.8.19;
 
 import "@openzeppelin/contracts/utils/Counters.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
@@ -8,7 +8,7 @@ contract NFTMarketplace is ERC721URIStorage {
     using Counters for Counters.Counter;
     Counters.Counter private _nftIds;
     address payable contractOwner;
-    uint256 public listingPrice = 0.00000000001 ether; // 10000000
+    uint256 public listingPrice = 10000000 wei;
 
     struct NFT {
         uint256 id;
@@ -39,24 +39,24 @@ contract NFTMarketplace is ERC721URIStorage {
         _safeMint(msg.sender, newNftId);
         _setTokenURI(newNftId, tokenURI);
 
-        listNFT(newNftId, price);
-    }
-
-    function listNFT(uint256 id, uint256 price) private {
-        require(msg.value == listingPrice, "Listing fee not paid");
-        require(price > 0, "Price must be greater than 0");
-
-        _idToNFT[id] = NFT(
-            id,
+        _idToNFT[newNftId] = NFT(
+            newNftId,
             payable(address(this)),
             payable(msg.sender),
             price,
             true
         );
 
-        _transfer(msg.sender, address(this), id);
+        (bool transferFeeSuccess, ) = payable(contractOwner).call{
+            value: listingPrice
+        }("");
 
-        emit NFTListed(id, address(this), msg.sender, price, true);
+        require(
+            transferFeeSuccess,
+            "Failed to transfer listing fee to the owner"
+        );
+
+        emit NFTListed(newNftId, address(this), msg.sender, price, true);
     }
 
     function getAllNFTs() public view returns (NFT[] memory) {
@@ -74,18 +74,20 @@ contract NFTMarketplace is ERC721URIStorage {
         uint256 totalItemCount = _nftIds.current();
         uint256 itemCount = 0;
 
-        for (uint256 i = 1; i < totalItemCount; i++) {
-            if (_idToNFT[i].owner == msg.sender) {
+        for (uint256 i = 0; i < totalItemCount; i++) {
+            if (_idToNFT[i + 1].owner == msg.sender) {
                 itemCount += 1;
             }
         }
 
         NFT[] memory items = new NFT[](itemCount);
+        uint256 currentIndex = 0;
 
-        for (uint256 i = 1; i < totalItemCount; i++) {
-            if (_idToNFT[i].owner == msg.sender) {
-                NFT storage currentItem = _idToNFT[i];
-                items[i + 1] = currentItem;
+        for (uint256 i = 0; i < totalItemCount; i++) {
+            if (_idToNFT[i + 1].owner == msg.sender) {
+                NFT storage currentItem = _idToNFT[i + 1];
+                items[currentIndex] = currentItem;
+                currentIndex += 1;
             }
         }
 
@@ -94,25 +96,18 @@ contract NFTMarketplace is ERC721URIStorage {
 
     function buyNFT(uint256 id) public payable {
         uint256 price = _idToNFT[id].price;
-        address seller = _idToNFT[id].owner;
-        require(msg.value == price, "Incorrect payment amount");
+        address payable seller = _idToNFT[id].owner;
 
-        _idToNFT[id].isListed = true;
+        require(price == msg.value, "Incorrect payment amount");
+
         _idToNFT[id].owner = payable(msg.sender);
 
-        _transfer(address(this), msg.sender, id);
-        approve(address(this), id);
+        _transfer(seller, msg.sender, id);
 
-        (bool ownerTransferSuccess, ) = payable(contractOwner).call{
-            value: listingPrice
-        }("");
         (bool sellerTransferSuccess, ) = payable(seller).call{value: msg.value}(
             ""
         );
 
-        require(
-            ownerTransferSuccess && sellerTransferSuccess,
-            "Transfering ETH failed"
-        );
+        require(sellerTransferSuccess, "Transfering ETH failed");
     }
 }

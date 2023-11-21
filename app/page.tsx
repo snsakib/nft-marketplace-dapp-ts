@@ -17,8 +17,10 @@ export default function Home() {
     } else {
       provider = new ethers.BrowserProvider(window.ethereum);
       let contract = new ethers.Contract(NFTMarketplaceAddress, Marketplace.abi, provider);
+      console.log(provider);
       let transaction = await contract.getAllNFTs();
       let items = await Promise.all(transaction.map(async (item) => {
+        console.log(item)
         let tokenURI = await contract.tokenURI(item.id);
         tokenURI = GetIpfsUrlFromPinata(tokenURI);
         let meta = await axios.get(tokenURI);

@@ -18,6 +18,7 @@ export default function MyNFT() {
     } else {
       provider = new ethers.BrowserProvider(window.ethereum);
       signer = await provider.getSigner();
+      console.log(signer)
       let contract = new ethers.Contract(NFTMarketplaceAddress, Marketplace.abi, signer);
       let transaction = await contract.getMyNFTs();
       let items = await Promise.all(transaction.map(async (item) => {

@@ -11,6 +11,8 @@ async function main() {
   export const NFTMarketplaceAddress = "${nftMarketplace.target}"
   `
   );
+
+  console.log(`Contract Deployed to ${nftMarketplace.target}`)
 }
 
 main()
