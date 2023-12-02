@@ -27,7 +27,7 @@ export default function MintNFT() {
         const metadataUploadResponse = await uploadMetadata(fileUploadResponse.fileURL);
         if(metadataUploadResponse.success) {
           if(window.ethereum === null) {
-            provider = ethers.getDefaultProvider();
+            console.log('Please Install Metamask')
           } else {
             //After adding your Hardhat network to your metamask, this code will get providers and signers
             provider = new ethers.BrowserProvider(window.ethereum)

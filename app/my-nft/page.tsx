@@ -14,7 +14,7 @@ export default function MyNFT() {
 
   async function getMyNFTs() {
     if(window.ethereum === null) {
-      provider = ethers.getDefaultProvider();
+      console.log('Please Install Metamask')
     } else {
       provider = new ethers.BrowserProvider(window.ethereum);
       signer = await provider.getSigner();

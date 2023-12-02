@@ -46,12 +46,12 @@ export default function NFTCard(data) {
           <div className='p-3 text-black'>
             <h1 className='font-bold text-xl'>{data.data.name}</h1>
             {/* <p className='text-base'>{data.data.description}</p> */}
-            <p className='text-base'>{data.data.price} ETH</p>
+            <p className='text-base mt-2 font-medium'>{data.data.price} ETH</p>
           </div>
         </div>
       </Link>
       <div className='py-3 mx-3'>
-        <button className='bg-sky-900 rounded p-2 w-full font-bold' onClick={() => buyNFT({ id: data.data.id, price: data.data.price})}>Buy NFT</button>
+        <button className='bg-blue-500 rounded p-2 w-full font-bold' onClick={() => buyNFT({ id: data.data.id, price: data.data.price})}>Buy NFT</button>
       </div>
     </div>
   )

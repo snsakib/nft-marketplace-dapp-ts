@@ -13,7 +13,7 @@ export default function Home() {
 
   async function getAllNFTs() {
     if(window.ethereum === null) {
-      provider = ethers.getDefaultProvider();
+      console.log('Please Install Metamask')
     } else {
       provider = new ethers.BrowserProvider(window.ethereum);
       let contract = new ethers.Contract(NFTMarketplaceAddress, Marketplace.abi, provider);
